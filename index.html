@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OwlGarden | Intelligent Knowledge Management</title>
+    <meta name="description" content="A calm, powerful place to learn, think, build, and explore ideas." />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config for Custom Colors & Animations -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: '#0b0d13',
+                        surface: '#121626',
+                        surfaceHighlight: '#1a2036',
+                        primary: '#6366f1', // Indigo 500
+                        primaryHover: '#4f46e5', // Indigo 600
+                        secondary: '#8b5cf6', // Violet 500
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'blob': 'blob 10s infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'gradient-x': 'gradient-x 3s ease infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'shimmer': 'shimmer 2.5s infinite',
+                        'blink': 'blink 4s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        scan: {
+                            '0%': { top: '0%', opacity: '0' },
+                            '10%': { opacity: '1' },
+                            '90%': { opacity: '1' },
+                            '100%': { top: '100%', opacity: '0' },
+                        },
+                        shimmer: {
+                            '100%': { transform: 'translateX(100%)' }
+                        },
+                        blink: {
+                            '0%, 96%, 100%': { transform: 'scaleY(1)' },
+                            '98%': { transform: 'scaleY(0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles for Utilities not in Tailwind -->
+    <style>
+        body {
+            background-color: #0b0d13;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0d13;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(18, 22, 38, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-card {
+            background: linear-gradient(180deg, rgba(26, 32, 54, 0.6) 0%, rgba(18, 22, 38, 0.4) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        /* Animated Text Gradient */
+        .text-gradient {
+            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 25%, #8b5cf6 50%, #6366f1 75%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger delays for reveals */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+
+        /* FAQ Transitions */
+        .faq-content {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .faq-item.active .faq-content {
+            max-height: 200px;
+            opacity: 1;
+            padding-top: 1rem;
+        }
+        .faq-icon {
+            transition: transform 0.4s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Glow Effect */
+        .glow-on-hover:hover {
+            box-shadow: 0 0 35px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Avatar Specifics */
+        .pupil {
+            transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <!-- Background Gradients -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-96 h-96 bg-blue-500/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer group" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:animate-wiggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">OwlGarden</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hover:scale-105 transform">Features</a>
+                    <a href="#about" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hover:scale-105 transform">About</a>
+                    <a href="#faq" class="text-sm font-medium text-gray-300 hover:text-white transition-colors hover:scale-105 transform">FAQ</a>
+                    <a href="#" class="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all border border-white/10 hover:shadow-lg hover:shadow-white/5">Log in</a>
+                    <a href="#" class="relative overflow-hidden px-5 py-2.5 rounded-full bg-primary hover:bg-primaryHover text-white text-sm font-semibold shadow-lg shadow-primary/30 transition-all transform hover:-translate-y-0.5 group">
+                        <span class="relative z-10">Get Started</span>
+                        <div class="absolute inset-0 -translate-x-full group-hover:animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none p-2 active:scale-95 transition-transform">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-white/5 absolute w-full animate-fade-in-up">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#features" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5">Features</a>
+                <a href="#about" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5">About</a>
+                <a href="#faq" class="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/5">FAQ</a>
+                <div class="pt-4 flex flex-col gap-3">
+                    <a href="#" class="block w-full text-center px-5 py-3 rounded-xl bg-white/5 text-white font-medium">Log in</a>
+                    <a href="#" class="block w-full text-center px-5 py-3 rounded-xl bg-primary text-white font-bold">Sign Up Free</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-primary mb-8 animate-fade-in-up hover:bg-white/10 transition-colors cursor-default" style="animation-delay: 0.1s;">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                v2.0 is now live
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up" style="animation-delay: 0.2s;">
+                Grow your mind in <br />
+                <span class="text-gradient animate-gradient-x">OwlGarden</span>
+            </h1>
+            
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10 leading-relaxed animate-fade-in-up" style="animation-delay: 0.3s;">
+                A calm, distraction-free environment to cultivate ideas, build knowledge, and compound your learning. Stop doom-scrolling, start growing.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up" style="animation-delay: 0.4s;">
+                <a href="#" class="group relative overflow-hidden w-full sm:w-auto px-8 py-4 rounded-xl bg-primary hover:bg-primaryHover text-white font-semibold text-lg shadow-xl shadow-primary/25 transition-all transform hover:-translate-y-1 glow-on-hover flex items-center justify-center gap-2">
+                    <span class="relative z-10">Start Learning Free</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="absolute inset-0 -translate-x-full group-hover:animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+                </a>
+                <a href="#about" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-surface border border-white/10 hover:bg-surfaceHighlight text-gray-300 font-medium text-lg transition-all hover:border-white/20 hover:text-white">
+                    How it works
+                </a>
+            </div>
+
+            <!-- Dashboard Mockup/Visual -->
+            <div class="mt-16 sm:mt-24 relative max-w-5xl mx-auto animate-fade-in-up" style="animation-delay: 0.6s;">
+                <div class="absolute inset-0 bg-gradient-to-t from-bg to-transparent z-10 h-full w-full"></div>
+                <div class="glass-card rounded-2xl p-2 sm:p-4 border-t border-white/10 shadow-2xl relative overflow-hidden group">
+                    <div class="rounded-xl overflow-hidden bg-[#0f111a] aspect-[16/9] relative flex items-center justify-center border border-white/5">
+                        
+                        <!-- Interactive Person (Face) -->
+                        <div class="relative w-48 h-48 bg-gradient-to-b from-primary to-primaryHover rounded-full flex flex-col items-center justify-center shadow-2xl animate-float">
+                            <!-- Hair/Headset Detail -->
+                            <div class="absolute -top-1 w-40 h-16 bg-surfaceHighlight/50 rounded-t-full opacity-60 backdrop-blur-sm border-t border-white/10"></div>
+                            
+                            <!-- Eyes Container -->
+                            <div class="flex gap-5 mb-3 z-10">
+                                <!-- Left Eye -->
+                                <div class="eye relative w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden animate-blink">
+                                    <div class="pupil w-5 h-5 bg-[#0b0d13] rounded-full relative">
+                                        <div class="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full opacity-80"></div>
+                                    </div>
+                                </div>
+                                <!-- Right Eye -->
+                                <div class="eye relative w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden animate-blink">
+                                    <div class="pupil w-5 h-5 bg-[#0b0d13] rounded-full relative">
+                                        <div class="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full opacity-80"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mouth -->
+                            <div class="w-10 h-4 border-b-4 border-white/30 rounded-b-full"></div>
+                        </div>
+
+                        <!-- Decorative floating UI cards -->
+                        <div class="absolute top-10 left-10 w-48 h-24 bg-surfaceHighlight rounded-lg border border-white/5 shadow-xl p-4 hidden md:block animate-float hover:border-primary/30 transition-colors">
+                            <div class="h-2 w-12 bg-primary/40 rounded mb-3"></div>
+                            <div class="h-2 w-32 bg-white/10 rounded mb-2"></div>
+                            <div class="h-2 w-24 bg-white/10 rounded"></div>
+                        </div>
+                        <div class="absolute bottom-10 right-10 w-56 h-32 bg-surfaceHighlight rounded-lg border border-white/5 shadow-xl p-4 hidden md:block animate-float-delayed hover:border-green-500/30 transition-colors">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold">98%</div>
+                                <div class="text-xs text-gray-400">Retention Score</div>
+                            </div>
+                            <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 w-[98%] shadow-[0_0_10px_rgba(34,197,94,0.4)]"></div>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <div class="h-6 w-16 bg-white/5 rounded"></div>
+                                <div class="h-6 w-16 bg-white/5 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Top Learners Choose <span class="text-gradient animate-gradient-x">OwlGarden</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">We've stripped away the gamification fluff and focused on cognitive science principles that actually help you learn.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-surfaceHighlight/50 group reveal delay-100 hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-400 group-hover:animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white group-hover:text-blue-400 transition-colors">Deep Focus Mode</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        A distraction-free interface that adapts to your circadian rhythm. No notifications, no clutter, just pure cognitive flow.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-surfaceHighlight/50 group reveal delay-200 hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-purple-400 group-hover:animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white group-hover:text-purple-400 transition-colors">Smart Recall AI</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Our algorithm tracks your forgetting curve and schedules reviews exactly when you need them, ensuring 3x better retention.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-card p-8 rounded-2xl hover:bg-surfaceHighlight/50 group reveal delay-300 hover:-translate-y-2 hover:shadow-2xl">
+                    <div class="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-400 group-hover:animate-wiggle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white group-hover:text-green-400 transition-colors">Visual Progress</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Watch your knowledge garden bloom. Visual data representations make tracking your consistency addictive in a healthy way.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof / Stats -->
+    <section class="py-12 border-y border-white/5 bg-surface/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center reveal">
+                <div class="p-4 hover:bg-white/5 rounded-xl transition-colors">
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1 counter" data-target="10000">0</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Active Gardeners</div>
+                </div>
+                <div class="p-4 hover:bg-white/5 rounded-xl transition-colors">
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1 counter" data-target="1200000">0</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Notes Planted</div>
+                </div>
+                <div class="p-4 hover:bg-white/5 rounded-xl transition-colors">
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1">4.9/5</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wider font-semibold">User Rating</div>
+                </div>
+                <div class="p-4 hover:bg-white/5 rounded-xl transition-colors">
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1">99.9%</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card rounded-3xl overflow-hidden reveal">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="p-10 md:p-16 flex flex-col justify-center relative z-10">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-6">Not just another note-taking app.</h2>
+                        <div class="space-y-6 text-gray-300 text-lg leading-relaxed">
+                            <p>
+                                Most tools are digital junkyards. You dump ideas in, and never see them again.
+                            </p>
+                            <p>
+                                <strong class="text-white">OwlGarden is different.</strong> We treat your mind like a garden. Ideas need to be watered (reviewed), pruned (refined), and cross-pollinated (connected).
+                            </p>
+                            <p>
+                                Inspired by the Zettelkasten method and modern cognitive psychology, we built the tool we wished existed when we were students.
+                            </p>
+                        </div>
+                        <div class="mt-8">
+                            <a href="#" class="text-primary font-semibold hover:text-primaryHover inline-flex items-center gap-2 group">
+                                Read our manifesto
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-surfaceHighlight to-surface relative h-64 lg:h-auto overflow-hidden">
+                         <!-- Decorative abstract visuals -->
+                         <div class="absolute inset-0 flex items-center justify-center opacity-30">
+                            <div class="w-64 h-64 border border-white/10 rounded-full flex items-center justify-center animate-spin-slow">
+                                <div class="w-48 h-48 border border-white/10 rounded-full flex items-center justify-center animate-pulse">
+                                    <div class="w-32 h-32 border border-white/10 rounded-full"></div>
+                                </div>
+                            </div>
+                         </div>
+                         <!-- Floating particles -->
+                         <div class="absolute top-1/4 left-1/4 w-3 h-3 bg-primary rounded-full animate-float"></div>
+                         <div class="absolute bottom-1/4 right-1/4 w-4 h-4 bg-secondary rounded-full animate-float-delayed"></div>
+                         
+                         <div class="absolute inset-0 bg-gradient-to-t from-[#121626] to-transparent opacity-80 lg:opacity-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p class="text-gray-400">Everything you need to know about the product and billing.</p>
+        </div>
+
+        <div class="space-y-4 reveal delay-200">
+            <!-- FAQ Item 1 -->
+            <div class="glass-card rounded-xl overflow-hidden faq-item cursor-pointer hover:bg-surfaceHighlight/50 transition-colors" onclick="toggleFaq(this)">
+                <div class="p-6 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg text-white">What exactly is OwlGarden?</h3>
+                    <svg class="w-5 h-5 text-gray-400 faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div class="px-6 pb-0 faq-content">
+                    <p class="text-gray-400 pb-6 border-t border-white/5 pt-4">
+                        Think of it as your digital brain turf. It combines note-taking, flashcards, and spaced repetition into one seamless workflow. You plant ideas, and the system ensures you don't forget them.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div class="glass-card rounded-xl overflow-hidden faq-item cursor-pointer hover:bg-surfaceHighlight/50 transition-colors" onclick="toggleFaq(this)">
+                <div class="p-6 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg text-white">Is there a free tier?</h3>
+                    <svg class="w-5 h-5 text-gray-400 faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div class="px-6 pb-0 faq-content">
+                    <p class="text-gray-400 pb-6 border-t border-white/5 pt-4">
+                        Yes! The core features are free forever for personal use. We offer a Pro plan for power users who need advanced analytics, unlimited file uploads, and API access.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div class="glass-card rounded-xl overflow-hidden faq-item cursor-pointer hover:bg-surfaceHighlight/50 transition-colors" onclick="toggleFaq(this)">
+                <div class="p-6 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg text-white">Do I need an internet connection?</h3>
+                    <svg class="w-5 h-5 text-gray-400 faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div class="px-6 pb-0 faq-content">
+                    <p class="text-gray-400 pb-6 border-t border-white/5 pt-4">
+                        OwlGarden works offline-first. You can write and review anywhere. Your data syncs automatically to the cloud once you're back online.
+                    </p>
+                </div>
+            </div>
+
+             <!-- FAQ Item 4 -->
+             <div class="glass-card rounded-xl overflow-hidden faq-item cursor-pointer hover:bg-surfaceHighlight/50 transition-colors" onclick="toggleFaq(this)">
+                <div class="p-6 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg text-white">Can I export my data?</h3>
+                    <svg class="w-5 h-5 text-gray-400 faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div class="px-6 pb-0 faq-content">
+                    <p class="text-gray-400 pb-6 border-t border-white/5 pt-4">
+                        Absolutely. Your data belongs to you. You can export everything to Markdown, JSON, or PDF at any time with a single click.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-5xl mx-auto text-center reveal">
+            <div class="bg-gradient-to-r from-primary to-secondary p-[1px] rounded-3xl animate-gradient-x" style="background-size: 200% 200%">
+                <div class="bg-[#0b0d13] rounded-3xl py-20 px-6 sm:px-12 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full bg-primary/5"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to upgrade your brain?</h2>
+                        <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">Join thousands of students, researchers, and creators building their second brain today.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="#" class="px-8 py-4 rounded-xl bg-white text-bg font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-lg shadow-white/10">Get Started for Free</a>
+                        </div>
+                        <p class="mt-6 text-sm text-gray-500">No credit card required • Cancel anytime</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-[#08090d] pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4 group cursor-pointer">
+                        <div class="w-6 h-6 rounded bg-primary flex items-center justify-center group-hover:rotate-12 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <span class="font-bold text-xl text-white">OwlGarden</span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Cultivating human intelligence in the age of artificial distraction.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Features</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Pricing</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Integrations</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">About</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Blog</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Careers</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors hover:translate-x-1 inline-block">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-600 text-sm">© 2026 OwlGarden Inc. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors transform hover:scale-110">
+                        <span class="sr-only">Twitter</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors transform hover:scale-110">
+                        <span class="sr-only">GitHub</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Glass Navigation Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('glass');
+                navbar.classList.add('shadow-lg');
+            } else {
+                navbar.classList.remove('glass');
+                navbar.classList.remove('shadow-lg');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // FAQ Toggle Logic
+        function toggleFaq(element) {
+            const allItems = document.querySelectorAll('.faq-item');
+            allItems.forEach(item => {
+                if (item !== element && item.classList.contains('active')) {
+                    item.classList.remove('active');
+                }
+            });
+            element.classList.toggle('active');
+        }
+
+        // Scroll Reveal Observer
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Number Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        
+        const counterObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = +counter.getAttribute('data-target');
+                    const duration = 2000; // ms
+                    const increment = target / (duration / 16); // 60fps
+                    
+                    let current = 0;
+                    
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            if (current > 1000000) {
+                                counter.innerText = (current / 1000000).toFixed(1) + 'M';
+                            } else if (current > 1000) {
+                                counter.innerText = Math.ceil(current / 1000) + 'k+';
+                            } else {
+                                counter.innerText = Math.ceil(current);
+                            }
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                             if (target >= 1000000) {
+                                counter.innerText = (target / 1000000).toFixed(1) + 'M';
+                            } else if (target >= 1000) {
+                                counter.innerText = (target / 1000) + 'k+';
+                            } else {
+                                counter.innerText = target;
+                            }
+                        }
+                    };
+                    
+                    updateCounter();
+                    observer.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => counterObserver.observe(counter));
+
+        // ------------------------------------------
+        // EYE TRACKING LOGIC
+        // ------------------------------------------
+        document.addEventListener('mousemove', (e) => {
+            const eyes = document.querySelectorAll('.eye');
+            eyes.forEach(eye => {
+                const rect = eye.getBoundingClientRect();
+                const x = (rect.left + rect.width / 2);
+                const y = (rect.top + rect.height / 2);
+                
+                // Calculate angle
+                const angle = Math.atan2(e.clientY - y, e.clientX - x);
+                
+                // Limit the pupil movement radius
+                const distance = Math.min(6, 8); 
+                
+                const pupil = eye.querySelector('.pupil');
+                const moveX = Math.cos(angle) * distance;
+                const moveY = Math.sin(angle) * distance;
+                
+                // Apply transform
+                pupil.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
